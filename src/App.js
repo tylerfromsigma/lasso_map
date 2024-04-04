@@ -15,24 +15,20 @@ client.config.configureEditorPanel([
   { type: "variable", name: "filterLatitude" },
   { type: "variable", name: "filterLongitude" },
   { name: "Variables", type: 'group' },  
-  
   { name: 'ShowLegend', source: "Variables", type: "toggle", defaultValue: true },
   { name: 'MapStyle', source: "Variables", type: 'text', defaultValue: "light" },
   { name: 'MapboxAccessToken', type: 'text', secure: true },
-
 ]);
 
 function App() {
-  // pk.eyJ1IjoidGFzcGVuY2VyIiwiYSI6ImNsdWlwMW90YzAxMXEycG1pcndmMzFoM3QifQ.uEwYbkTtZDQ7CoulhbDdpQ
   const config = useConfig();
+  // pk.eyJ1IjoidGFzcGVuY2VyIiwiYSI6ImNsdWlwMW90YzAxMXEycG1pcndmMzFoM3QifQ.uEwYbkTtZDQ7CoulhbDdpQ
   const mapboxAccessToken = config.MapboxAccessToken;
-  const showLegend = true;
   const sigmaData = useElementData(config.source);
   const [filterLatitude, setFilterLatitude] = useVariable(config.filterLatitude);
   const [filterLongitude, setFilterLongitude] = useVariable(config.filterLongitude);
   const [prevSigmaData, setPrevSigmaData] = useState(null);
 
-  console.log(config.ShowLegend)
 
   const updatePlotSize = () => {
     const width = window.innerWidth;
@@ -53,17 +49,18 @@ function App() {
       setPrevSigmaData(sigmaData);
 
       const graphDiv = document.getElementById('myDiv');
-      
-      const names = sigmaData[config.legend];
 
-      // Check if names is undefined
-      if (!names) {
-        console.error("Names data is undefined");
+      let names = config.legend ? sigmaData[config.legend] : null;
+      const lat = sigmaData[config.latitude];
+      const lon = sigmaData[config.longitude];
+      
+      if (!lat || !lon) {
         return;
       }
 
-      const lat = sigmaData[config.latitude];
-      const lon = sigmaData[config.longitude];
+      if (!names) {
+        names = Array.from({ length: lat.length }, () => null);
+      }
 
       const uniqueNames = Array.from(new Set(names));
 
@@ -85,6 +82,8 @@ function App() {
           lon: longitudesForName
         };
       });
+
+      console.log(plotData)
 
       const centerLat = lat.reduce((a, b) => a + b, 0) / lat.length;
       const centerLon = lon.reduce((a, b) => a + b, 0) / lon.length;
@@ -126,7 +125,7 @@ function App() {
           y: 0.98, 
           bgcolor: 'rgba(0,0,0,0.5)', 
           font: { color: 'white' }, 
-          visible: showLegend 
+          visible: config.showLegend 
         },
         // hoverlabel: {
         //   bgcolor: 'white',
@@ -138,14 +137,12 @@ function App() {
 
       Plotly.newPlot('myDiv', plotData, layout, { displayModeBar: true });
 
-      window.addEventListener('resize', updatePlotSize);
-
       graphDiv.on('plotly_selected', function(eventData) {
-        // const selectedPoints = eventData.points.map(pt => ({
-        //   lat: pt.lon,
-        //   lon: pt.lon
-        // }));
-        // console.log(selectedPoints);
+        const selectedPoints = eventData.points.map(pt => ({
+          lat: pt.lon,
+          lon: pt.lon
+        }));
+        console.log(selectedPoints);
 
         const selectedLatitude = eventData.points.map(pt => pt.lat);
         if (selectedLatitude.length) {
@@ -167,11 +164,8 @@ function App() {
         setFilterLongitude();
       });
 
-      return () => {
-        window.removeEventListener('resize', updatePlotSize);
-      };
     }
-  }, [sigmaData, config, filterLatitude, filterLongitude, prevSigmaData, mapboxAccessToken, showLegend]); // Add prevSigmaData to the dependency array
+  }, [sigmaData, config, filterLatitude, filterLongitude, prevSigmaData, mapboxAccessToken]); // Add prevSigmaData to the dependency array
 
 
   if (sigmaData) {
