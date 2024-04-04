@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Plotly from 'plotly.js-dist';
 import { 
   client, 
@@ -27,9 +27,7 @@ function App() {
   const config = useConfig();
   const mapboxAccessToken = config.MapboxAccessToken;
   const showLegend = true;
-  const mapStyle = "dark";
   const sigmaData = useElementData(config.source);
-  const ref = useRef();
   const [filterLatitude, setFilterLatitude] = useVariable(config.filterLatitude);
   const [filterLongitude, setFilterLongitude] = useVariable(config.filterLongitude);
   const [prevSigmaData, setPrevSigmaData] = useState(null);
@@ -61,7 +59,6 @@ function App() {
       // Check if names is undefined
       if (!names) {
         console.error("Names data is undefined");
-        let names = ['N/A']; // Change const to let here
         return;
       }
 
@@ -144,10 +141,10 @@ function App() {
       window.addEventListener('resize', updatePlotSize);
 
       graphDiv.on('plotly_selected', function(eventData) {
-        const selectedPoints = eventData.points.map(pt => ({
-          lat: pt.lon,
-          lon: pt.lon
-        }));
+        // const selectedPoints = eventData.points.map(pt => ({
+        //   lat: pt.lon,
+        //   lon: pt.lon
+        // }));
         // console.log(selectedPoints);
 
         const selectedLatitude = eventData.points.map(pt => pt.lat);
