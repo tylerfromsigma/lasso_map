@@ -171,7 +171,7 @@ function App() {
         window.removeEventListener('resize', updatePlotSize);
       };
     }
-  }, [sigmaData, config, filterLatitude, filterLongitude, prevSigmaData]); // Add prevSigmaData to the dependency array
+  }, [sigmaData, config, filterLatitude, filterLongitude, prevSigmaData, mapboxAccessToken, showLegend]); // Add prevSigmaData to the dependency array
 
 
   if (sigmaData) {
