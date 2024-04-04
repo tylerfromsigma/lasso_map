@@ -29,14 +29,13 @@ function App() {
   const [filterLongitude, setFilterLongitude] = useVariable(config.filterLongitude);
   const [prevSigmaData, setPrevSigmaData] = useState(null);
 
-
-  const updatePlotSize = () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    Plotly.relayout('myDiv', { width: width, height: height });
-  };
-
   useEffect(() => {
+    const updatePlotSize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      Plotly.relayout('myDiv', { width: width, height: height });
+    };
+
     window.addEventListener('resize', updatePlotSize);
 
     return () => {
@@ -83,8 +82,6 @@ function App() {
         };
       });
 
-      console.log(plotData)
-
       const centerLat = lat.reduce((a, b) => a + b, 0) / lat.length;
       const centerLon = lon.reduce((a, b) => a + b, 0) / lon.length;
 
@@ -95,6 +92,10 @@ function App() {
       const lonZoom = Math.log2(180 / maxLonDiff);
 
       const zoom = Math.min(latZoom, lonZoom);
+
+      // Check if MapStyle is valid, if not, use the default value
+      const validMapStyles = ['light', 'dark', 'streets', 'outdoors', 'satellite', 'satellite-streets'];
+      const mapStyle = validMapStyles.includes(config.MapStyle) ? config.MapStyle : 'light';
 
       const layout = {
         dragmode: 'zoom',
@@ -107,7 +108,7 @@ function App() {
             x: [0, 1],
             y: [0, 1]
           },
-          style: config.MapStyle,
+          style: mapStyle,
           zoom: zoom
         },
         margin: { 
@@ -126,15 +127,10 @@ function App() {
           bgcolor: 'rgba(0,0,0,0.5)', 
           font: { color: 'white' }, 
           visible: config.showLegend 
-        },
-        // hoverlabel: {
-        //   bgcolor: 'white',
-        //   bordercolor: 'black'
-        // },
+        }
       };
 
       Plotly.setPlotConfig({ mapboxAccessToken: mapboxAccessToken });
-
       Plotly.newPlot('myDiv', plotData, layout, { displayModeBar: true });
 
       graphDiv.on('plotly_selected', function(eventData) {
@@ -163,16 +159,12 @@ function App() {
         setFilterLatitude();
         setFilterLongitude();
       });
-
     }
   }, [sigmaData, config, filterLatitude, filterLongitude, prevSigmaData, mapboxAccessToken]); // Add prevSigmaData to the dependency array
 
-
-  if (sigmaData) {
-    return (
-      <div id='myDiv'></div>
-    );
-  }
+  return (
+    <div id='myDiv'></div>
+  );
 }
 
 export default App;
