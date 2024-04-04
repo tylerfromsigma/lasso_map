@@ -128,10 +128,10 @@ function App() {
           font: { color: 'white' }, 
           visible: showLegend 
         },
-        hoverlabel: {
-          bgcolor: 'white',
-          bordercolor: 'black'
-        },
+        // hoverlabel: {
+        //   bgcolor: 'white',
+        //   bordercolor: 'black'
+        // },
       };
 
       Plotly.setPlotConfig({ mapboxAccessToken: mapboxAccessToken });
