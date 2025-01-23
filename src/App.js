@@ -22,7 +22,6 @@ client.config.configureEditorPanel([
 
 function App() {
   const config = useConfig();
-  // pk.eyJ1IjoidGFzcGVuY2VyIiwiYSI6ImNsdWlwMW90YzAxMXEycG1pcndmMzFoM3QifQ.uEwYbkTtZDQ7CoulhbDdpQ
   const mapboxAccessToken = config.MapboxAccessToken;
   const sigmaData = useElementData(config.source);
   const [filterLatitude, setFilterLatitude] = useVariable(config.filterLatitude);
